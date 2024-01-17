@@ -34,13 +34,24 @@ class Blockchain:
         encode_block = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(encode_block).hexdigest()
 
-    def proof_of_work(self, previous_nonce):
+    def proof_of_work_easy(self, previous_nonce):
         new_nonce = 1
         check_proof = False
 
         while not check_proof:
             hash_operation = hashlib.sha256(str(new_nonce**2 - previous_nonce**2).encode()).hexdigest()
             if hash_operation[:4] == "0000":
+                check_proof = True
+            else:
+                new_nonce += 1
+        return new_nonce
+    def proof_of_work_hard(self, previous_nonce):
+        new_nonce = 1
+        check_proof = False
+
+        while not check_proof:
+            hash_operation = hashlib.sha256(str(new_nonce**2 - previous_nonce**2).encode()).hexdigest()
+            if (hash_operation[:5] == "00000") :
                 check_proof = True
             else:
                 new_nonce += 1
@@ -95,7 +106,7 @@ def mining_block():
     except IndexError:
         return jsonify({"error": "Cannot mine a new block. Chain is empty."}), 400
 
-    nonce = blockchain.proof_of_work(previous_nonce)
+    nonce = blockchain.proof_of_work_easy(previous_nonce)
 
     previous_hash = blockchain.hash(previous_block)
 
@@ -110,7 +121,32 @@ def mining_block():
         "previous_hash": block["previous_hash"]
     }
     return jsonify(response), 200
+@app.route('/mining/hard') 
+def mining_block_hard():
 
+    BTC = 1
+    blockchain.transaction = blockchain.transaction+BTC
+    try:
+        previous_block = blockchain.get_previous_block()
+        previous_nonce = previous_block["nonce"]
+    except IndexError:
+        return jsonify({"error": "Cannot mine a new block. Chain is empty."}), 400
+
+    nonce = blockchain. proof_of_work_hard(previous_nonce)
+
+    previous_hash = blockchain.hash(previous_block)
+
+    block = blockchain.create_block(nonce, previous_hash)
+
+    response = {
+        "message": "Mining เรียบร้อย",
+        "index": block["index"],
+        "data":block["data"],
+        "timestamp": block["timestamp"],
+        "nonce": block["nonce"],
+        "previous_hash": block["previous_hash"]
+    }
+    return jsonify(response), 200
 
 @app.route('/is_valid')
 def is_valid():
