@@ -12,11 +12,12 @@ class Blockchain:
         self.create_block(nonce=1, previous_hash="0")
 
     def create_block(self, nonce, previous_hash):
+        
         # แก้ไข timestamp
         current_time = datetime.datetime.now()
         seconds_to_next_two_hours = (2 * 60 * 60 - (current_time.hour * 3600 + current_time.minute * 60 + current_time.second)) % (2 * 60 * 60)
         timestamp_in_future = current_time + datetime.timedelta(seconds=seconds_to_next_two_hours)
-    
+        
         block = {
             "index": len(self.chain) + 1,
             "data" :self.transaction,
@@ -35,6 +36,7 @@ class Blockchain:
         return hashlib.sha256(encode_block).hexdigest()
 
     def proof_of_work_easy(self, previous_nonce):
+        
         new_nonce = 1
         check_proof = False
 
@@ -97,6 +99,7 @@ def get_chain():
 # easy mode minning
 @app.route('/mining/easy') 
 def mining_block():
+    is_valid = blockchain.is_chain_valid(blockchain.chain)
 
     BTC = 1
     blockchain.transaction = blockchain.transaction+BTC
@@ -105,24 +108,32 @@ def mining_block():
         previous_nonce = previous_block["nonce"]
     except IndexError:
         return jsonify({"error": "Cannot mine a new block. Chain is empty."}), 400
+    if(is_valid):
+        nonce = blockchain.proof_of_work_easy(previous_nonce)
 
-    nonce = blockchain.proof_of_work_easy(previous_nonce)
+        previous_hash = blockchain.hash(previous_block)
 
-    previous_hash = blockchain.hash(previous_block)
+        block = blockchain.create_block(nonce, previous_hash)
 
-    block = blockchain.create_block(nonce, previous_hash)
-
-    response = {
+        response = {
         "message": "Mining เรียบร้อย",
         "index": block["index"],
         "data":block["data"],
         "timestamp": block["timestamp"],
         "nonce": block["nonce"],
-        "previous_hash": block["previous_hash"]
-    }
+        "previous_hash": block["previous_hash"],
+        "isvalid":"true"
+        }
+    else:
+         response = {
+        "message": "mining failed block chain is invalid",
+        "is_invalid":"false"
+       
+        }
     return jsonify(response), 200
 @app.route('/mining/hard') 
 def mining_block_hard():
+    is_valid = blockchain.is_chain_valid(blockchain.chain)
 
     BTC = 1
     blockchain.transaction = blockchain.transaction+BTC
@@ -132,20 +143,28 @@ def mining_block_hard():
     except IndexError:
         return jsonify({"error": "Cannot mine a new block. Chain is empty."}), 400
 
-    nonce = blockchain. proof_of_work_hard(previous_nonce)
+    if(is_valid):
+        nonce = blockchain.proof_of_work_easy(previous_nonce)
 
-    previous_hash = blockchain.hash(previous_block)
+        previous_hash = blockchain.hash(previous_block)
 
-    block = blockchain.create_block(nonce, previous_hash)
+        block = blockchain.create_block(nonce, previous_hash)
 
-    response = {
+        response = {
         "message": "Mining เรียบร้อย",
         "index": block["index"],
         "data":block["data"],
         "timestamp": block["timestamp"],
         "nonce": block["nonce"],
-        "previous_hash": block["previous_hash"]
-    }
+        "previous_hash": block["previous_hash"],
+        "isvalid":"true"
+        }
+    else:
+         response = {
+        "message": "mining failed block chain is invalid",
+        "is_invalid":"false"
+       
+        }
     return jsonify(response), 200
 
 @app.route('/is_valid')
