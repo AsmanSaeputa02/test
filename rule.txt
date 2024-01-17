@@ -1,0 +1,6 @@
+blockchain 20 point
+
+5 point -- present /hold
+5 point --time stamp /success 
+5 point -- difficult for minning method seperate part easy-hard
+5 poibt -- check bofore create block
