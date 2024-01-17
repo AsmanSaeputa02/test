@@ -1,6 +1,7 @@
 import datetime
 import hashlib
 import json
+import time
 from flask import Flask, jsonify
 
 
@@ -11,10 +12,15 @@ class Blockchain:
         self.create_block(nonce=1, previous_hash="0")
 
     def create_block(self, nonce, previous_hash):
+        # แก้ไข timestamp
+        current_time = datetime.datetime.now()
+        seconds_to_next_two_hours = (2 * 60 * 60 - (current_time.hour * 3600 + current_time.minute * 60 + current_time.second)) % (2 * 60 * 60)
+        timestamp_in_future = current_time + datetime.timedelta(seconds=seconds_to_next_two_hours)
+    
         block = {
             "index": len(self.chain) + 1,
             "data" :self.transaction,
-            "timestamp": str(datetime.datetime.now()),
+            "timestamp": str(timestamp_in_future.strftime("%Y-%m-%d %H:%M:%S")),
             "nonce": nonce,
             "previous_hash": previous_hash
         }
@@ -77,7 +83,8 @@ def get_chain():
     }
     return jsonify(response), 200
 
-@app.route('/mining')
+# easy mode minning
+@app.route('/mining/easy') 
 def mining_block():
 
     BTC = 1
