@@ -2,7 +2,7 @@ import datetime
 import hashlib
 import json
 import time
-from flask import Flask, jsonify
+from flask import Flask, jsonify,render_template
 
 
 class Blockchain:
@@ -97,8 +97,9 @@ blockchain = Blockchain()
 app = Flask(__name__)
 
 @app.route('/')
-def hello():
-    return "<p>Hello world<p/>"
+@app.route('/home')
+def home():
+    return  render_template("index.html")
 
 @app.route('/get_chain')
 def get_chain():
@@ -212,8 +213,6 @@ def is_valid():
 
 
 if __name__ == "__main__":
-    app.run()
-
-
+    app.run(debug= True,port=5000)
 
   
