@@ -34,12 +34,13 @@ class Blockchain:
     def hash(self, block):
         encode_block = json.dumps(block, sort_keys=True).encode()
         return hashlib.sha256(encode_block).hexdigest()
-
+    
+    
+#esay mode
     def proof_of_work_easy(self, previous_nonce):
         
         new_nonce = 1
         check_proof = False
-
         while not check_proof:
             hash_operation = hashlib.sha256(str(new_nonce**2 - previous_nonce**2).encode()).hexdigest()
             if hash_operation[:4] == "0000":
@@ -47,6 +48,9 @@ class Blockchain:
             else:
                 new_nonce += 1
         return new_nonce
+    
+    
+#hardv mode
     def proof_of_work_hard(self, previous_nonce):
         new_nonce = 1
         check_proof = False
@@ -58,6 +62,11 @@ class Blockchain:
             else:
                 new_nonce += 1
         return new_nonce
+    
+    
+    
+    
+    
     #ตรวจสอบ block 
     def is_chain_valid(self,chain):
         previous_block= chain[0]
@@ -81,6 +90,9 @@ class Blockchain:
 
 
 
+
+
+
 blockchain = Blockchain()
 app = Flask(__name__)
 
@@ -96,15 +108,15 @@ def get_chain():
     }
     return jsonify(response), 200
 
+
+
+
+
+
+
+
+
 # easy mode minning
-
-
-
-
-
-
-
-
 @app.route('/mining/easy') 
 def mining_block():
     is_valid = blockchain.is_chain_valid(blockchain.chain)
@@ -144,7 +156,7 @@ def mining_block():
 
 
 
-
+# easy mode hard
 @app.route('/mining/hard') 
 def mining_block_hard():
     is_valid = blockchain.is_chain_valid(blockchain.chain)
