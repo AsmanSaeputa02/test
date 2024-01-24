@@ -63,7 +63,7 @@ class Blockchain:
         previous_block= chain[0]
         block_index = 1 
         while block_index<len(chain):
-            block = chain[block_index] #กำหนล่องที่ตรวจสอบ
+            block = chain[block_index] #กำหนดกล่องที่ตรวจสอบ
             if block["previous_hash"] != self.hash(previous_block):
                 return False 
             
@@ -73,7 +73,7 @@ class Blockchain:
 
             if hashoperation[:4]!="0000":
                 return False
-             
+
             previous_block = block=block
             block_index+=1
 
@@ -97,6 +97,14 @@ def get_chain():
     return jsonify(response), 200
 
 # easy mode minning
+
+
+
+
+
+
+
+
 @app.route('/mining/easy') 
 def mining_block():
     is_valid = blockchain.is_chain_valid(blockchain.chain)
@@ -125,12 +133,18 @@ def mining_block():
         "isvalid":"true"
         }
     else:
-         response = {
+        response = {
         "message": "mining failed block chain is invalid",
         "is_invalid":"false"
-       
+
         }
     return jsonify(response), 200
+
+
+
+
+
+
 @app.route('/mining/hard') 
 def mining_block_hard():
     is_valid = blockchain.is_chain_valid(blockchain.chain)
@@ -160,12 +174,19 @@ def mining_block_hard():
         "isvalid":"true"
         }
     else:
-         response = {
+        response = {
         "message": "mining failed block chain is invalid",
         "is_invalid":"false"
-       
+
         }
     return jsonify(response), 200
+
+
+
+
+
+
+
 
 @app.route('/is_valid')
 def is_valid():
