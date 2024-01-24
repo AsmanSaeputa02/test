@@ -1,0 +1,28 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain App</title>
+    <!-- <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script> -->
+    <link rel="stylesheet" type="text/css" href=" ../static/index.css">
+</head>
+<body>
+    
+    <button onclick="getChain()">Get Chain</button>
+    <button onclick="mineBlock('easy')">Mine Block (Easy)</button>
+    <button onclick="mineBlock('hard')">Mine Block (Hard)</button>
+    <button onclick="checkValidity()">Check Validity</button>
+
+    <div class="box" id="responseContainer">
+        <h2>Response:</h2>
+        <pre id="response"></pre>
+    </div>
+
+	<script src="../static/index.js"></script>
+
+    
+</body>
+</html>

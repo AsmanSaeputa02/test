@@ -1,57 +1,16 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blockchain App</title>
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
-    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+    <title>Blockchain</title>
+    <link rel="stylesheet" type="text/css" href="../static/index.css">
 </head>
 <body>
-    <button onclick="getChain()">Get Chain</button>
-    <button onclick="mineBlock('easy')">Mine Block (Easy)</button>
-    <button onclick="mineBlock('hard')">Mine Block (Hard)</button>
-    <button onclick="checkValidity()">Check Validity</button>
-
-    <div id="responseContainer">
-        <h2>Response:</h2>
-        <pre id="response"></pre>
+    <div class="box">
+        <a href="{{ url_for('static', filename='Blockchain.html') }}" class="btn btn-primary">Blockchain</a>
     </div>
-
-    <script>
-        function getChain() {
-            fetch('/get_chain')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('response').innerHTML = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-
-        function mineBlock(difficulty) {
-            fetch(`/mining/${difficulty}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('response').innerHTML = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-
-        function checkValidity() {
-            fetch('/is_valid')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('response').innerHTML = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-    </script>
 </body>
 </html>

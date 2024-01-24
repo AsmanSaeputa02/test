@@ -2,7 +2,7 @@ import datetime
 import hashlib
 import json
 import time
-from flask import Flask, jsonify
+from flask import Flask, jsonify,render_template
 
 class Blockchain:
     def __init__(self):
@@ -83,8 +83,9 @@ app = Flask(__name__)
 
 # รายการที่มีการเรียกใช้งานในเว็บแอพ Flask
 @app.route('/')
-def hello():
-    return "<p>Hello world<p/>"
+@app.route('/home')
+def home():
+    return  render_template("index.html")
 
 @app.route('/get_chain')
 def get_chain():
