@@ -101,8 +101,19 @@ def home():
 
 @app.route('/get_chain')
 def get_chain():
+    response_chain = []
+    for block in blockchain.chain:
+        response_chain.append({
+            "index": block["index"],
+            "data": block["data"],
+            "timestamp": block["timestamp"],
+            "nonce": block["nonce"],
+            "previous_hash": block["previous_hash"],
+            "hash": blockchain.hash(block)  # Add hash to the response
+        })
+
     response = {
-        "chain": blockchain.chain,
+        "chain": response_chain,
         "length": len(blockchain.chain)
     }
     return jsonify(response), 200

@@ -1,0 +1,62 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #fff url('/static/img/webpage.jpg') center center/cover no-repeat;
+    color: hwb(0 100% 0%);
+}
+
+.box{
+    position:none;
+    z-index: -1; /* ให้ pseudo-element อยู่ต่ำกว่าเนื้อหาภายใน */
+
+    background-color: rgba(0, 0, 0, 0.89);
+    border-radius:3px;
+    margin: 20px 50px;
+    padding:50px 10px;
+  }
+
+header {
+	background-color: #f8f9fa;
+	padding: 20px;
+	text-align: center;
+}
+
+nav ul {
+	background-color: #e9ecef;
+	list-style-type: none;
+	padding: 0;
+	overflow: hidden;
+}
+
+nav ul li {
+	float: left;
+}
+
+nav ul li a {
+	display: block;
+	color: #007bff;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+nav ul li a:hover {
+	background-color: #d8dfe0;
+}
+
+main {
+	padding: 20px;
+}
+
+form {
+	margin-top: 20px;
+}
+
+footer {
+	background-color: #f8f9fa;
+	padding: 20px;
+	text-align: center;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+}
