@@ -57,7 +57,7 @@ class Blockchain:
     def proof_of_work_hard(self, previous_nonce):
         new_nonce = 1
         check_proof = False
-        target_zeros = 6
+        target_zeros = 5
 
         while not check_proof:
             hash_operation = hashlib.sha256(str(new_nonce**2 - previous_nonce**2).encode()).hexdigest()
@@ -140,6 +140,9 @@ def mine_block(mode):
         previous_nonce = previous_block["nonce"]
     except IndexError:
         return {"error": "Cannot mine a new block. Chain is empty."}
+
+    BTC = 1  # Set the value of BTC
+    blockchain.transaction = blockchain.transaction + BTC  # Add BTC to self.transaction
 
     if mode == "easy":
         nonce = blockchain.proof_of_work_easy(previous_nonce)
