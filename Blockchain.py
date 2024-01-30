@@ -11,7 +11,7 @@ class Blockchain:
 
     def create_block(self, nonce, previous_hash):
         current_time = datetime.datetime.now()
-        next_five_minutes = (current_time.minute // 5 + 1) * 5
+        next_five_minutes = (current_time.minute // 1) * 1
         timestamp_in_future = current_time.replace(minute=next_five_minutes, second=0, microsecond=0)
 
         # Check if there is a recent block and if there are changes
@@ -61,32 +61,49 @@ class Blockchain:
 
         while not check_proof:
             hash_operation = hashlib.sha256(str(new_nonce**2 - previous_nonce**2).encode()).hexdigest()
-            if hash_operation[:target_zeros] == "0" * target_zeros:
+            if hash_operation[:target_zeros] == "0" * target_zeros and new_nonce > 1000000:
                 check_proof = True
             else:
                 new_nonce += 1
         return new_nonce
 
-    def is_chain_valid(self, chain):
+    def is_chain_valid(self, chain,diff):
         if not chain:
             return False
 
         previous_block = chain[0]
         block_index = 1
-        while block_index < len(chain):
-            block = chain[block_index]
-            if block["previous_hash"] != self.hash(previous_block):
-                return False
+        target_zeros = 5
+        if diff == "hard":
+            while block_index < len(chain):
+                block = chain[block_index]
+                if block["previous_hash"] != self.hash(previous_block):
+                    return False
 
-            previous_nonce = previous_block["nonce"]
-            nonce = block["nonce"]
-            hash_operation = hashlib.sha256(str(nonce**2 - previous_nonce**2).encode()).hexdigest()
+                previous_nonce = previous_block["nonce"]
+                nonce = block["nonce"]
+                hash_operation = hashlib.sha256(str(nonce**2 - previous_nonce**2).encode()).hexdigest()
 
-            if hash_operation[:4] != "0000":
-                return False
+                if not hash_operation[:target_zeros] == "0" * target_zeros and nonce > 1000000 :
+                    return False
 
-            previous_block = block
-            block_index += 1
+                previous_block = block
+                block_index += 1
+        elif diff == "easy":
+            while block_index < len(chain):
+                block = chain[block_index]
+                if block["previous_hash"] != self.hash(previous_block):
+                    return False
+
+                previous_nonce = previous_block["nonce"]
+                nonce = block["nonce"]
+                hash_operation = hashlib.sha256(str(nonce**2 - previous_nonce**2).encode()).hexdigest()
+
+                if hash_operation[:4] != "0000" :
+                    return False
+
+                previous_block = block
+                block_index += 1
 
         return True
 
@@ -121,17 +138,55 @@ def get_chain():
 # Easy mode mining
 @app.route('/mining/easy')
 def mining_block_easy():
-    response = mine_block("easy")
+    response = mine_block_easy()
     return jsonify(response), 200
 
 # Hard mode mining
 @app.route('/mining/hard')
 def mining_block_hard():
-    response = mine_block("hard")
+    response = mine_block_hard()
     return jsonify(response), 200
 
-def mine_block(mode):
-    is_valid = blockchain.is_chain_valid(blockchain.chain)
+# def mine_block(mode):
+#     is_valid = blockchain.is_chain_valid(blockchain.chain)
+#     if not is_valid:
+#         return {"error": "Mining failed. Blockchain is invalid", "is_valid": "false"}
+
+#     try:
+#         previous_block = blockchain.get_previous_block()
+#         previous_nonce = previous_block["nonce"]
+#     except IndexError:
+#         return {"error": "Cannot mine a new block. Chain is empty."}
+
+#     BTC = 1  # Set the value of BTC
+#     blockchain.transaction = blockchain.transaction + BTC  # Add BTC to self.transaction
+
+#     if mode == "easy":
+#         nonce = blockchain.proof_of_work_easy(previous_nonce)
+#     elif mode == "hard":
+#         nonce = blockchain.proof_of_work_hard(previous_nonce)
+#     else:
+#         return {"error": "Invalid mining mode"}
+
+#     previous_hash = blockchain.hash(previous_block)
+#     block = blockchain.create_block(nonce, previous_hash)
+
+#     if block:
+#         response = {
+#             "message": f"Mining ({mode}) completed",
+#             "index": block["index"],
+#             "data": block["data"],
+#             "timestamp": block["timestamp"],
+#             "nonce": block["nonce"],
+#             "previous_hash": block["previous_hash"],
+#             "hash": blockchain.hash(block),  # Add hash to the response
+#             "is_valid": "true"
+#         }
+#         return response
+#     else:
+#         return {"message": "Block not created. No changes in data, nonce, or previous hash.", "is_valid": "false"}
+def mine_block_easy():
+    is_valid = blockchain.is_chain_valid(blockchain.chain,"easy")
     if not is_valid:
         return {"error": "Mining failed. Blockchain is invalid", "is_valid": "false"}
 
@@ -143,20 +198,13 @@ def mine_block(mode):
 
     BTC = 1  # Set the value of BTC
     blockchain.transaction = blockchain.transaction + BTC  # Add BTC to self.transaction
-
-    if mode == "easy":
-        nonce = blockchain.proof_of_work_easy(previous_nonce)
-    elif mode == "hard":
-        nonce = blockchain.proof_of_work_hard(previous_nonce)
-    else:
-        return {"error": "Invalid mining mode"}
-
+    nonce = blockchain.proof_of_work_easy(previous_nonce)
     previous_hash = blockchain.hash(previous_block)
     block = blockchain.create_block(nonce, previous_hash)
 
     if block:
         response = {
-            "message": f"Mining ({mode}) completed",
+            # "message": f"Mining ({mode}) completed",
             "index": block["index"],
             "data": block["data"],
             "timestamp": block["timestamp"],
@@ -169,6 +217,38 @@ def mine_block(mode):
     else:
         return {"message": "Block not created. No changes in data, nonce, or previous hash.", "is_valid": "false"}
 
+
+def mine_block_hard():
+    is_valid = blockchain.is_chain_valid(blockchain.chain,"hard")
+    if not is_valid:
+        return {"error": "Mining failed. Blockchain is invalid", "is_valid": "false"}
+
+    try:
+        previous_block = blockchain.get_previous_block()
+        previous_nonce = previous_block["nonce"]
+    except IndexError:
+        return {"error": "Cannot mine a new block. Chain is empty."}
+
+    BTC = 1  # Set the value of BTC
+    blockchain.transaction = blockchain.transaction + BTC  # Add BTC to self.transaction
+    nonce = blockchain.proof_of_work_hard(previous_nonce)
+    previous_hash = blockchain.hash(previous_block)
+    block = blockchain.create_block(nonce, previous_hash)
+
+    if block:
+        response = {
+            # "message": f"Mining ({mode}) completed",
+            "index": block["index"],
+            "data": block["data"],
+            "timestamp": block["timestamp"],
+            "nonce": block["nonce"],
+            "previous_hash": block["previous_hash"],
+            "hash": blockchain.hash(block),  # Add hash to the response
+            "is_valid": "true"
+        }
+        return response
+    else:
+        return {"message": "Block not created. No changes in data, nonce, or previous hash.", "is_valid": "false"}
 @app.route('/is_valid')
 def is_valid():
     is_valid = blockchain.is_chain_valid(blockchain.chain)
